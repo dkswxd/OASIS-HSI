@@ -4,6 +4,8 @@ import torch
 def get_dataset_name(mode):
     if mode == "ade20k":
         return "Ade20kDataset"
+    if mode == "hsi":
+        return "HSIDataset"
     if mode == "cityscapes":
         return "CityscapesDataset"
     if mode == "coco":

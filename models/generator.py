@@ -2,6 +2,7 @@ import torch.nn as nn
 import models.norms as norms
 import torch
 import torch.nn.functional as F
+import torch.utils.checkpoint as cp
 
 
 class OASIS_Generator(nn.Module):
@@ -71,6 +72,12 @@ class ResnetBlock_with_SPADE(nn.Module):
         self.activ = nn.LeakyReLU(0.2, inplace=True)
 
     def forward(self, x, seg):
+        if self.opt.with_cp:
+            return cp.checkpoint(self.original_forward, x, seg)
+        else:
+            return self.original_forward(x, seg)
+
+    def original_forward(self, x, seg):
         if self.learned_shortcut:
             x_s = self.conv_s(self.norm_s(x, seg))
         else:

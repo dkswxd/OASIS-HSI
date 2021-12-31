@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import models.norms as norms
-
+import torch.utils.checkpoint as cp
 
 class OASIS_Discriminator(nn.Module):
     def __init__(self, opt):
@@ -14,13 +14,14 @@ class OASIS_Discriminator(nn.Module):
         self.body_down = nn.ModuleList([])
         # encoder part
         for i in range(opt.num_res_blocks):
-            self.body_down.append(residual_block_D(self.channels[i], self.channels[i+1], opt, -1, first=(i==0)))
+            self.body_down.append(residual_block_D(self.channels[i], self.channels[i+1], opt, -1, first=(i==0), with_cp=self.opt.with_cp))
         # decoder part
-        self.body_up.append(residual_block_D(self.channels[-1], self.channels[-2], opt, 1))
+        self.body_up.append(residual_block_D(self.channels[-1], self.channels[-2], opt, 1, with_cp=self.opt.with_cp))
         for i in range(1, opt.num_res_blocks-1):
-            self.body_up.append(residual_block_D(2*self.channels[-1-i], self.channels[-2-i], opt, 1))
-        self.body_up.append(residual_block_D(2*self.channels[1], 64, opt, 1))
+            self.body_up.append(residual_block_D(2*self.channels[-1-i], self.channels[-2-i], opt, 1, with_cp=self.opt.with_cp))
+        self.body_up.append(residual_block_D(2*self.channels[1], 64, opt, 1, with_cp=self.opt.with_cp))
         self.layer_up_last = nn.Conv2d(64, output_channel, 1, 1, 0)
+
 
     def forward(self, input):
         x = input
@@ -38,9 +39,10 @@ class OASIS_Discriminator(nn.Module):
 
 
 class residual_block_D(nn.Module):
-    def __init__(self, fin, fout, opt, up_or_down, first=False):
+    def __init__(self, fin, fout, opt, up_or_down, first=False, with_cp=False):
         super().__init__()
         # Attributes
+        self.with_cp = with_cp
         self.up_or_down = up_or_down
         self.first = first
         self.learned_shortcut = (fin != fout)
@@ -64,6 +66,12 @@ class residual_block_D(nn.Module):
             self.sampling = nn.Sequential()
 
     def forward(self, x):
+        if self.with_cp:
+            return cp.checkpoint(self.original_forward, x)
+        else:
+            return self.original_forward(x)
+
+    def original_forward(self, x):
         x_s = self.shortcut(x)
         dx = self.conv1(x)
         dx = self.conv2(dx)
