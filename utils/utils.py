@@ -38,13 +38,20 @@ class results_saver():
         for i in range(len(label)):
             im = tens_to_lab(label[i], self.num_cl)
             self.save_im(im, "label", name[i])
-            im = tens_to_im(generated[i]) * 255
-            self.save_im(im, "image", name[i])
+            if generated.shape[1] == 60:
+                im = hsitens_to_raw(generated[i]) * 65535
+                self.save_hsi(im, "image", name[i])
+            else:
+                im = tens_to_im(generated[i]) * 255
+                self.save_im(im, "image", name[i])
 
     def save_im(self, im, mode, name):
         im = Image.fromarray(im.astype(np.uint8))
-        im.save(os.path.join(self.path_to_save[mode], name.split("/")[-1]).replace('.jpg', '.png'))
+        im.save(os.path.join(self.path_to_save[mode], name.split("/")[-1]).replace('.jpg', '.png').replace('.hdr', '.png'))
 
+    def save_hsi(self, im, mode, name):
+        im = im.astype(np.uint16)
+        im.tofile(os.path.join(self.path_to_save[mode], name.split("/")[-1]).replace('.hdr', '.raw'))
 
 class timer():
     def __init__(self, opt):
@@ -202,7 +209,10 @@ class image_saver():
             if is_label:
                 im = tens_to_lab(batch[i], self.num_cl)
             else:
-                im = tens_to_im(batch[i])
+                if batch.shape[1] == 60:
+                    im = hsitens_to_im(batch[i])
+                else:
+                    im = tens_to_im(batch[i])
             plt.axis("off")
             fig.add_subplot(self.rows, self.cols, i+1)
             plt.axis("off")
@@ -214,6 +224,16 @@ class image_saver():
 
 def tens_to_im(tens):
     out = (tens + 1) / 2
+    out.clamp(0, 1)
+    return np.transpose(out.detach().cpu().numpy(), (1, 2, 0))
+
+def hsitens_to_im(tens):
+    out = tens / 8 + 0.5
+    out.clamp(0, 1)
+    return np.transpose(out.detach().cpu().numpy(), (1, 2, 0))[:,:,10:40:10]
+
+def hsitens_to_raw(tens):
+    out = tens / 8 + 0.5
     out.clamp(0, 1)
     return np.transpose(out.detach().cpu().numpy(), (1, 2, 0))
 

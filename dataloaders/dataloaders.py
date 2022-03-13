@@ -6,6 +6,8 @@ def get_dataset_name(mode):
         return "Ade20kDataset"
     if mode == "hsi":
         return "HSIDataset"
+    if mode == "hsipng":
+        return "HSIPNGDataset"
     if mode == "cityscapes":
         return "CityscapesDataset"
     if mode == "coco":

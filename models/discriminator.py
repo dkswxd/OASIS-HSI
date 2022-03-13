@@ -7,14 +7,15 @@ class OASIS_Discriminator(nn.Module):
     def __init__(self, opt):
         super().__init__()
         self.opt = opt
+        image_channels=60
         sp_norm = norms.get_spectral_norm(opt)
         output_channel = opt.semantic_nc + 1 # for N+1 loss
-        self.channels = [3, 128, 128, 256, 256, 512, 512]
+        self.channels = [image_channels, 128, 128, 256, 256, 512, 512]
         self.body_up   = nn.ModuleList([])
         self.body_down = nn.ModuleList([])
         # encoder part
         for i in range(opt.num_res_blocks):
-            self.body_down.append(residual_block_D(self.channels[i], self.channels[i+1], opt, -1, first=(i==0), with_cp=self.opt.with_cp))
+            self.body_down.append(residual_block_D(self.channels[i], self.channels[i+1], opt, -1, first=(i==0), with_cp=False if i == 0 else self.opt.with_cp))
         # decoder part
         self.body_up.append(residual_block_D(self.channels[-1], self.channels[-2], opt, 1, with_cp=self.opt.with_cp))
         for i in range(1, opt.num_res_blocks-1):

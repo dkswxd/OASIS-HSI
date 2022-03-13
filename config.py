@@ -36,6 +36,7 @@ def add_all_arguments(parser, train):
     parser.add_argument('--dataset_mode', type=str, default='coco', help='this option indicates which dataset should be loaded')
     parser.add_argument('--no_flip', action='store_true', help='if specified, do not flip the images for data argumentation')
 
+    parser.add_argument('--with_cp', action='store_true', default=False, help='if specified, use cp')
     # for generator
     parser.add_argument('--num_res_blocks', type=int, default=6, help='number of residual blocks in G and D')
     parser.add_argument('--channels_G', type=int, default=64, help='# of gen filters in first conv layer in generator')
@@ -68,7 +69,6 @@ def add_all_arguments(parser, train):
         parser.add_argument('--no_labelmix', action='store_true', default=False, help='if specified, do *not* use LabelMix')
         parser.add_argument('--lambda_labelmix', type=float, default=10.0, help='weight for LabelMix regularization')
 
-        parser.add_argument('--with_cp', action='store_true', default=False, help='if specified, use cp')
     else:
         parser.add_argument('--results_dir', type=str, default='./results/', help='saves testing results here.')
         parser.add_argument('--ckpt_iter', type=str, default='best', help='which epoch to load to evaluate a model')
@@ -90,7 +90,7 @@ def set_dataset_default_lm(opt, parser):
         parser.set_defaults(num_epochs=100)
     if opt.dataset_mode == "hsi":
         parser.set_defaults(lambda_labelmix=10.0)
-        parser.set_defaults(EMA_decay=0.9999)
+        parser.set_defaults(EMA_decay=0.999)
         parser.set_defaults(freq_print=100)
         parser.set_defaults(freq_save_ckpt=1000)
         parser.set_defaults(freq_save_latest=1000)

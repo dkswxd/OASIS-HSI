@@ -9,11 +9,12 @@ class OASIS_Generator(nn.Module):
     def __init__(self, opt):
         super().__init__()
         self.opt = opt
+        image_channels=60
         sp_norm = norms.get_spectral_norm(opt)
         ch = opt.channels_G
         self.channels = [16*ch, 16*ch, 16*ch, 8*ch, 4*ch, 2*ch, 1*ch]
-        self.init_W, self.init_H = self.compute_latent_vector_size(opt)
-        self.conv_img = nn.Conv2d(self.channels[-1], 3, 3, padding=1)
+        self.down_scale = 2**(opt.num_res_blocks-1)
+        self.conv_img = nn.Conv2d(self.channels[-1], image_channels, 3, padding=1)
         self.up = nn.Upsample(scale_factor=2)
         self.body = nn.ModuleList([])
         for i in range(len(self.channels)-1):
@@ -23,10 +24,6 @@ class OASIS_Generator(nn.Module):
         else:
             self.fc = nn.Conv2d(self.opt.semantic_nc, 16 * ch, 3, padding=1)
 
-    def compute_latent_vector_size(self, opt):
-        w = opt.crop_size // (2**(opt.num_res_blocks-1))
-        h = round(w / opt.aspect_ratio)
-        return h, w
 
     def forward(self, input, z=None):
         seg = input
@@ -38,7 +35,7 @@ class OASIS_Generator(nn.Module):
             z = z.view(z.size(0), self.opt.z_dim, 1, 1)
             z = z.expand(z.size(0), self.opt.z_dim, seg.size(2), seg.size(3))
             seg = torch.cat((z, seg), dim = 1)
-        x = F.interpolate(seg, size=(self.init_W, self.init_H))
+        x = F.interpolate(seg, size=(z.shape[2] // self.down_scale, z.shape[3] // self.down_scale))
         x = self.fc(x)
         for i in range(self.opt.num_res_blocks):
             x = self.body[i](x, seg)

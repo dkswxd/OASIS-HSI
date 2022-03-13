@@ -6,7 +6,7 @@ import torchvision
 class VGG19(torch.nn.Module):
     def __init__(self, requires_grad=False):
         super().__init__()
-        vgg_pretrained_features = torchvision.models.vgg19(pretrained=True).features
+        vgg_pretrained_features = torchvision.models.vgg19(pretrained=False).features
         self.slice1 = torch.nn.Sequential()
         self.slice2 = torch.nn.Sequential()
         self.slice3 = torch.nn.Sequential()
