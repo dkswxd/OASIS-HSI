@@ -27,7 +27,8 @@ def read_arguments(train=True):
 def add_all_arguments(parser, train):
     #--- general options ---
     parser.add_argument('--name', type=str, default='label2coco', help='name of the experiment. It decides where to store samples and models')
-    parser.add_argument('--seed', type=int, default=42, help='random seed')
+    parser.add_argument('--seed', type=int, default=10086, help='random seed')
+    # parser.add_argument('--seed', type=int, default=42, help='random seed')
     parser.add_argument('--gpu_ids', type=str, default='0', help='gpu ids: e.g. 0  0,1,2, 0,2. use -1 for CPU')
     parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='models are saved here')
     parser.add_argument('--no_spectral_norm', action='store_true', help='this option deactivates spectral norm in all layers')
@@ -37,6 +38,7 @@ def add_all_arguments(parser, train):
     parser.add_argument('--no_flip', action='store_true', help='if specified, do not flip the images for data argumentation')
 
     parser.add_argument('--with_cp', action='store_true', default=False, help='if specified, use cp')
+    parser.add_argument('--image_channels', type=int, default=3, help='image channels')
     # for generator
     parser.add_argument('--num_res_blocks', type=int, default=6, help='number of residual blocks in G and D')
     parser.add_argument('--channels_G', type=int, default=64, help='# of gen filters in first conv layer in generator')
@@ -69,6 +71,8 @@ def add_all_arguments(parser, train):
         parser.add_argument('--no_labelmix', action='store_true', default=False, help='if specified, do *not* use LabelMix')
         parser.add_argument('--lambda_labelmix', type=float, default=10.0, help='weight for LabelMix regularization')
 
+        parser.add_argument('--use_swinspecd', action='store_true', help='use swinspec d')
+
     else:
         parser.add_argument('--results_dir', type=str, default='./results/', help='saves testing results here.')
         parser.add_argument('--ckpt_iter', type=str, default='best', help='which epoch to load to evaluate a model')
@@ -89,6 +93,14 @@ def set_dataset_default_lm(opt, parser):
         parser.set_defaults(EMA_decay=0.9999)
         parser.set_defaults(num_epochs=100)
     if opt.dataset_mode == "hsi":
+        parser.set_defaults(lambda_labelmix=10.0)
+        parser.set_defaults(EMA_decay=0.999)
+        parser.set_defaults(freq_print=100)
+        parser.set_defaults(freq_save_ckpt=1000)
+        parser.set_defaults(freq_save_latest=1000)
+        parser.set_defaults(freq_fid=1000)
+        parser.set_defaults(num_epochs=2000)
+    if opt.dataset_mode == "hsipng":
         parser.set_defaults(lambda_labelmix=10.0)
         parser.set_defaults(EMA_decay=0.999)
         parser.set_defaults(freq_print=100)

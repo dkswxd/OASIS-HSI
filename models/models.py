@@ -1,6 +1,7 @@
 from models.sync_batchnorm import DataParallelWithCallback
 import models.generator as generators
 import models.discriminator as discriminators
+import models.swinspecdiscriminator as swinspecdiscriminators
 import os
 import copy
 import torch
@@ -16,7 +17,10 @@ class OASIS_model(nn.Module):
         #--- generator and discriminator ---
         self.netG = generators.OASIS_Generator(opt)
         if opt.phase == "train":
-            self.netD = discriminators.OASIS_Discriminator(opt)
+            if not opt.use_swinspecd:
+                self.netD = discriminators.OASIS_Discriminator(opt)
+            else:
+                self.netD = swinspecdiscriminators.SwinSpecDiscriminator(opt)
         self.print_parameter_count()
         self.init_networks()
         #--- EMA of generator weights ---

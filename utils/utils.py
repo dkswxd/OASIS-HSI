@@ -38,7 +38,7 @@ class results_saver():
         for i in range(len(label)):
             im = tens_to_lab(label[i], self.num_cl)
             self.save_im(im, "label", name[i])
-            if generated.shape[1] == 60:
+            if generated.shape[1] == 60 or generated.shape[1] == 32:
                 im = hsitens_to_raw(generated[i]) * 65535
                 self.save_hsi(im, "image", name[i])
             else:
@@ -211,6 +211,8 @@ class image_saver():
             else:
                 if batch.shape[1] == 60:
                     im = hsitens_to_im(batch[i])
+                elif batch.shape[1] == 32:
+                    im = hsi32tens_to_im(batch[i])
                 else:
                     im = tens_to_im(batch[i])
             plt.axis("off")
@@ -230,7 +232,12 @@ def tens_to_im(tens):
 def hsitens_to_im(tens):
     out = tens / 8 + 0.5
     out.clamp(0, 1)
-    return np.transpose(out.detach().cpu().numpy(), (1, 2, 0))[:,:,10:40:10]
+    return np.transpose(out.detach().cpu().numpy(), (1, 2, 0))[:,:,30:0:-10]
+
+def hsi32tens_to_im(tens):
+    out = tens / 8 + 0.5
+    out.clamp(0, 1)
+    return np.transpose(out.detach().cpu().numpy(), (1, 2, 0))[:,:,26:0:-10]
 
 def hsitens_to_raw(tens):
     out = tens / 8 + 0.5

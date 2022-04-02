@@ -9,7 +9,7 @@ class OASIS_Generator(nn.Module):
     def __init__(self, opt):
         super().__init__()
         self.opt = opt
-        image_channels=60
+        image_channels=opt.image_channels
         sp_norm = norms.get_spectral_norm(opt)
         ch = opt.channels_G
         self.channels = [16*ch, 16*ch, 16*ch, 8*ch, 4*ch, 2*ch, 1*ch]

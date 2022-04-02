@@ -28,9 +28,9 @@ class VGG19(torch.nn.Module):
                 param.requires_grad = False
 
     def forward(self, X):
-        X = X[:,5:36:5,:,:]
+        X = X[:,1:31:5,:,:]
         _b, _c, _h, _w = X.shape
-        X = X.reshape(_b * _c, 1, _h, _w).repeat(1, 3, 1, 1)
+        X = X.reshape(_b * _c // 3, 3, _h, _w)
         h_relu1 = cp.checkpoint(self.slice1, X)
         h_relu2 = cp.checkpoint(self.slice2, h_relu1)
         h_relu3 = cp.checkpoint(self.slice3, h_relu2)

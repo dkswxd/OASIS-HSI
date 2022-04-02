@@ -8,8 +8,8 @@ import numpy as np
 
 class HSIPNGDataset(torch.utils.data.Dataset):
     def __init__(self, opt, for_metrics):
-        opt.load_size = (512, 640)
-        opt.crop_size = 448
+        opt.load_size = (256, 320)
+        opt.crop_size = 256
         opt.label_nc = 2
         opt.contain_dontcare_label = False
         opt.semantic_nc = 2 # label_nc + unknown
@@ -33,7 +33,7 @@ class HSIPNGDataset(torch.utils.data.Dataset):
 
     def list_images(self):
         # mode = "refined" if self.opt.phase == "test" or self.for_metrics else "unrefined"
-        mode = "unrefined" if self.opt.phase == "test" or self.for_metrics else "unrefined"
+        mode = "refined" if self.opt.phase == "test" or self.for_metrics else "unrefined"
         path_img = os.path.join(self.opt.dataroot, "images", mode)
         path_lab = os.path.join(self.opt.dataroot, "annotations", mode)
         img_list = os.listdir(path_img)

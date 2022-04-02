@@ -7,7 +7,7 @@ class OASIS_Discriminator(nn.Module):
     def __init__(self, opt):
         super().__init__()
         self.opt = opt
-        image_channels=60
+        image_channels=opt.image_channels
         sp_norm = norms.get_spectral_norm(opt)
         output_channel = opt.semantic_nc + 1 # for N+1 loss
         self.channels = [image_channels, 128, 128, 256, 256, 512, 512]
