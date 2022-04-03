@@ -66,10 +66,10 @@ class HSIDatasetBuffered(torch.utils.data.Dataset):
         # opt.crop_size = 448
         # opt.load_size = (256, 320)
         # opt.crop_size = 256
-        # opt.load_size = (128, 160)
-        # opt.crop_size = 128
-        opt.load_size = (64, 80)
-        opt.crop_size = 64
+        opt.load_size = (128, 160)
+        opt.crop_size = 128
+        # opt.load_size = (64, 80)
+        # opt.crop_size = 64
         opt.label_nc = 2
         opt.contain_dontcare_label = False
         opt.semantic_nc = 2 # label_nc + unknown
@@ -147,7 +147,7 @@ class HSIDatasetBuffered(torch.utils.data.Dataset):
         # normalize
         image = image.astype(np.float32)
         image -= np.mean(image,axis=(0,1),keepdims=True)
-        image /= (np.clip(np.std(image,axis=(0,1),keepdims=True), 1e-6, 1e6) * 2)
+        image /= (np.clip(np.std(image,axis=(0,1),keepdims=True), 1e-6, 1e6) * 4)
         # to tensor
         image = TR.functional.to_tensor(image.copy())
         label = TR.functional.to_tensor(label.copy())

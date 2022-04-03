@@ -39,7 +39,7 @@ class results_saver():
             im = tens_to_lab(label[i], self.num_cl)
             self.save_im(im, "label", name[i])
             if generated.shape[1] == 60 or generated.shape[1] == 32:
-                im = hsitens_to_raw(generated[i]) * 65535
+                im = hsitens_to_raw(generated[i]) * 30000
                 self.save_hsi(im, "image", name[i])
             else:
                 im = tens_to_im(generated[i]) * 255
