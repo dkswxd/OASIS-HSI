@@ -138,7 +138,7 @@ class HSIDataset(torch.utils.data.Dataset):
         # normalize
         image = image.astype(np.float32)
         image -= np.mean(image,axis=(0,1),keepdims=True)
-        image /= np.clip(np.std(image,axis=(0,1),keepdims=True), 1e-6, 1e6)
+        image /= (np.clip(np.std(image,axis=(0,1),keepdims=True), 1e-6, 1e6) * 16)
         # to tensor
         image = TR.functional.to_tensor(image.copy())
         label = TR.functional.to_tensor(label.copy())

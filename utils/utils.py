@@ -230,17 +230,17 @@ def tens_to_im(tens):
     return np.transpose(out.detach().cpu().numpy(), (1, 2, 0))
 
 def hsitens_to_im(tens):
-    out = tens / 8 + 0.5
+    out = tens / 2 + 0.5
     out.clamp(0, 1)
     return np.transpose(out.detach().cpu().numpy(), (1, 2, 0))[:,:,30:0:-10]
 
 def hsi32tens_to_im(tens):
-    out = tens / 8 + 0.5
+    out = tens / 2 + 0.5
     out.clamp(0, 1)
     return np.transpose(out.detach().cpu().numpy(), (1, 2, 0))[:,:,26:0:-10]
 
 def hsitens_to_raw(tens):
-    out = tens / 8 + 0.5
+    out = tens / 2 + 0.5
     out.clamp(0, 1)
     return np.transpose(out.detach().cpu().numpy(), (1, 2, 0))
 
