@@ -57,7 +57,7 @@ def HSIopen(filename):
 
 
 
-class HSIDataset(torch.utils.data.Dataset):
+class HSISFIDDataset(torch.utils.data.Dataset):
     def __init__(self, opt, for_metrics):
         # opt.load_size = (512, 640)
         # opt.crop_size = 448
@@ -120,13 +120,12 @@ class HSIDataset(torch.utils.data.Dataset):
         image = np.transpose(image, (1, 2, 0))
         label = np.array(TR.functional.resize(label, (new_height, new_width), Image.NEAREST))
         # crop
-        if not (self.opt.phase == "test" or self.opt.no_flip or self.for_metrics):
-            crop_x = random.randint(0, np.maximum(0, new_width  - self.opt.crop_size))
-            crop_y = random.randint(0, np.maximum(0, new_height - self.opt.crop_size))
-            # image = image.crop((crop_x, crop_y, crop_x + self.opt.crop_size, crop_y + self.opt.crop_size))
-            # label = label.crop((crop_x, crop_y, crop_x + self.opt.crop_size, crop_y + self.opt.crop_size))
-            image = image[crop_y : crop_y + self.opt.crop_size, crop_x : crop_x + self.opt.crop_size, :]
-            label = label[crop_y : crop_y + self.opt.crop_size, crop_x : crop_x + self.opt.crop_size]
+        crop_x = 0
+        crop_y = 0
+        # image = image.crop((crop_x, crop_y, crop_x + self.opt.crop_size, crop_y + self.opt.crop_size))
+        # label = label.crop((crop_x, crop_y, crop_x + self.opt.crop_size, crop_y + self.opt.crop_size))
+        image = image[crop_y : crop_y + self.opt.crop_size, crop_x : crop_x + self.opt.crop_size, :]
+        label = label[crop_y : crop_y + self.opt.crop_size, crop_x : crop_x + self.opt.crop_size]
         # flip
         if not (self.opt.phase == "test" or self.opt.no_flip or self.for_metrics):
             if random.random() < 0.5:

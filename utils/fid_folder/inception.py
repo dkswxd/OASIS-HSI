@@ -83,8 +83,8 @@ class InceptionV3(nn.Module):
 
         # Block 0: input to maxpool1
         block0 = [
-            nn.Conv2d(32, 32, kernel_size=3, stride=2),
-            # inception.Conv2d_1a_3x3,
+            # nn.Conv2d(32, 32, kernel_size=3, stride=2),
+            inception.Conv2d_1a_3x3,
             inception.Conv2d_2a_3x3,
             inception.Conv2d_2b_3x3,
             nn.MaxPool2d(kernel_size=3, stride=2)

@@ -44,7 +44,7 @@ class HSIPNGDataset(torch.utils.data.Dataset):
         labels = sorted(lab_list)
         assert len(images)  == len(labels), "different len of images and labels %s - %s" % (len(images), len(labels))
         for i in range(len(images)):
-            assert os.path.splitext(images[i])[0] == os.path.splitext(labels[i])[0], '%s and %s are not matching' % (images[i], labels[i])
+            assert os.path.splitext(images[i])[0] == os.path.splitext(labels[i])[0][:-2], '%s and %s are not matching' % (images[i], labels[i])
         return images, labels, (path_img, path_lab)
 
     def transforms(self, image, label):

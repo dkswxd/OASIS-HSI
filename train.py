@@ -7,6 +7,7 @@ import dataloaders.dataloaders as dataloaders
 import utils.utils as utils
 from utils.fid_scores import fid_pytorch
 import config
+import time
 
 
 #--- read options ---#
@@ -52,6 +53,8 @@ for epoch in range(start_epoch, opt.num_epochs):
         loss_D, losses_D_list = loss_D.mean(), [loss.mean() if loss is not None else None for loss in losses_D_list]
         loss_D.backward()
         optimizerD.step()
+
+        time.sleep(2)
 
         #--- stats update ---#
         if not opt.no_EMA:
